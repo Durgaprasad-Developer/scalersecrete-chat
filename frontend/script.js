@@ -26,10 +26,10 @@ socket.onmessage = (event) => {
 
 sendButton.addEventListener("click", () => {
     const currentTime = Date.now();
-    if (currentTime - lastMessageTime < SPAM_TIMEOUT) {
-        alert("You can only send a message every 1 minute!");
-        return;
-    }
+    // if (currentTime - lastMessageTime < SPAM_TIMEOUT) {
+    //     alert("You can only send a message every 1 minute!");
+    //     return;
+    // }
 
     const message = messageInput.value.trim();
     if (message) {
