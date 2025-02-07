@@ -14,7 +14,10 @@ socket.onmessage = (event) => {
     if (event.data instanceof Blob) {
         const reader = new FileReader();
         reader.onload = () => {
-            const messageText = reader.result;
+            const messageText = reader.result;if (currentTime - lastMessageTime < SPAM_TIMEOUT) {
+    //     alert("You can only send a message every 1 minute!");
+    //     return;
+    // }
             displayMessage(messageText);
         };
         reader.readAsText(event.data);
@@ -25,7 +28,7 @@ socket.onmessage = (event) => {
 };
 
 sendButton.addEventListener("click", () => {
-    const currentTime = Date.now();
+    // const currentTime = Date.now();
     // if (currentTime - lastMessageTime < SPAM_TIMEOUT) {
     //     alert("You can only send a message every 1 minute!");
     //     return;
