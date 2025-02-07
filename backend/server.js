@@ -1,29 +1,31 @@
 const express = require("express");
 const WebSocket = require("ws");
-const path = require("path");
+const cors = require("cors");
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// Serve static files (frontend)
-app.use(express.static(path.join(__dirname, "../frontend")));
-
-const wss = new WebSocket.Server({ noServer: true });
-
+app.use(cors());
+const server = app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+const wss = new WebSocket.Server({ server });
+let clinetCount = 0;
 wss.on("connection", (ws) => {
-  console.log("Client connected");
+    clinetCount++;
+    console.log(`${clinetCount} online`)
+    console.log("New client connected");
 
-  ws.on("message", (message) => {
-    console.log("Received:", message);
-    ws.send(message);  // Echo the message back to the client
-  });
-});
+    ws.on("message", (message) => {
+        console.log(`Received: ${message}`);
+        wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(message); 
+            }
+        });
+    });
 
-app.server = app.listen(process.env.PORT || 8080, () => {
-  console.log(`Server started on port 8080`);
-});
-
-app.server.on("upgrade", (request, socket, head) => {
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit("connection", ws, request);
-  });
+    ws.on("close", () => {
+        console.log("Client disconnected");
+    });
 });
